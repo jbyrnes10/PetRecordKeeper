@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddPetActivity">
+
+    <TextView
+        android:text="@string/add_pet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:id="@+id/add_pet" />
+
+    <EditText
+        android:id="@+id/pet_name_input"
+        android:layout_width="281dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:ems="6"
+        android:gravity="center"
+        android:hint="@string/pet_name_label"
+        android:inputType="text"
+        android:textAlignment="center" />
+
+    <Spinner
+        android:id="@+id/species_spinner"
+        android:layout_width="135dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/birthDate_input"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-174dp"
+        android:spinnerMode="dropdown" />
+
+    <EditText
+        android:id="@+id/birthDate_input"
+        android:layout_width="198dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="190dp"
+        android:ems="10"
+        android:hint="Birth / Adoption Date"
+        android:textAlignment="center"
+        android:focusableInTouchMode="false" />
+
+    <Button
+        android:id="@+id/add_photo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pet_photo_view"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="23dp"
+        android:onClick="launchGallery"
+        android:text="From Gallery" />
+
+    <Button
+        android:id="@+id/launch_camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/add_photo_button"
+        android:text="Take New Picture" />
+
+    <ImageView
+        android:id="@+id/pet_photo_view"
+        android:layout_width="match_parent"
+        android:layout_height="134dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="61dp"
+        android:layout_marginStart="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/add_pet_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Add Pet"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Add Photo"
+        android:textAlignment="center"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="36dp"
+        android:layout_height="29dp"
+        android:layout_alignBaseline="@+id/add_photo_button"
+        android:layout_centerHorizontal="true"
+        android:text="OR"
+        android:textAlignment="center"
+        android:visibility="visible" />
+
+</RelativeLayout>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Pet Record Keeper</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_pet">Add New Pet</string>
+    <string name="profile">Profile</string>
+    <string name="pet_name_label">Pet\'s Name</string>
+    <string name="remove">Remove</string>
+    <string-array name="species_array">
+        <item>Cat</item>
+        <item>Dog</item>
+        <item>Other</item>
+    </string-array>
+</resources>
