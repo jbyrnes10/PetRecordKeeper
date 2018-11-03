@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".AddPetActivity">
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+    tools:context=".EditPetActivity">
 
     <Button
         android:id="@+id/add_photo_button"
@@ -12,8 +12,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignTop="@+id/launch_camera_button"
         android:layout_marginTop="0dp"
-        android:onClick="launchGallery"
         android:text="@string/add_saved_picture" />
+        <!--android:onClick="launchGallery"-->
 
     <Button
         android:id="@+id/launch_camera_button"
@@ -62,16 +62,19 @@
         android:layout_marginBottom="123dp"
         android:ems="10"
         android:focusableInTouchMode="false"
-        android:hint="@string/birth_date"
+        android:hint="Birth / Adoption Date"
         android:textAlignment="center" />
 
     <Button
-        android:id="@+id/add_pet_button"
+        android:id="@+id/update_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/add_pet"
-        android:textAlignment="center" />
+        android:text="@string/update_pet" />
+
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete_pet" />
 
 </RelativeLayout>

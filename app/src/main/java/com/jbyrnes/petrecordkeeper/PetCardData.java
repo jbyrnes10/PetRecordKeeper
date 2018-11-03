@@ -46,18 +46,24 @@ public class PetCardData {
         ArrayList<PetCard> cards = new ArrayList<>();
         Cursor cursor = null;
         try {
-            cursor = db.query(PetDatabase.TABLE_PET_PROFILES, PROFILE_COLUMNS, null, null, null, null, null);
-            if (cursor.getCount() > 0) {
-                while (cursor.moveToNext()) {
-                    PetCard card = new PetCard();
-                    card.setId(cursor.getLong(cursor.getColumnIndex(PetDatabase.COLUMN_ID)));
-                    card.setName(cursor.getString(cursor.getColumnIndex(PetDatabase.PET_NAME)));
-                    //card.setColorResource(cursor.getInt(cursor.getColumnIndex(PetDatabase.COLUMN_COLOR_RESOURCE)));
-                    cards.add(card);
-                }
-            }
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+            cursor = database.rawQuery("SELECT * FROM PET_PROFILES ORDER BY NAME DESC", null);
+
+            int count = cursor.getCount();
+
+            if (count > 0 && cursor.moveToFirst()) {
+                do {
+                cards.add(new PetCard(
+                        cursor.getInt(0), //id,
+                        cursor.getString(1), //name
+                        cursor.getString(2), //species
+                        cursor.getString(3), //breed
+                        cursor.getString(4), //birth date
+                        cursor.getBlob(5) //picture
+                ));}
+                while (cursor.moveToNext());
+           }
+        } catch (Exception ex){
+            System.out.println(ex.getMessage());
             } finally{
             if (cursor != null) {
                 cursor.close();
@@ -66,12 +72,42 @@ public class PetCardData {
         return cards;
     }
 
+    public PetCard getSingleCard(String name, long id) {
+        PetCard card = new PetCard();
+        Cursor cursor = null;
+
+        try {
+            if (database == null) open();
+            cursor = database.rawQuery("SELECT * FROM PET_PROFILES WHERE NAME = '" + name + "' AND ID = " + id + " ORDER BY NAME DESC", null);
+
+            int count = cursor.getCount();
+
+            if (count == 1 && cursor.moveToFirst()) {
+                    card = new PetCard(
+                            cursor.getLong(0), //id,
+                            cursor.getString(1), //name
+                            cursor.getString(2), //species
+                            cursor.getString(3), //breed
+                            cursor.getString(4), //birth date
+                            cursor.getBlob(5) //picture
+                    );}
+
+        } catch (Exception ex){
+            System.out.println(ex.getMessage());
+        } finally{
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return card;
+    }
+
     public PetCard create(PetCard card) {
         ContentValues values = new ContentValues();
         values.put(PetDatabase.PET_NAME, card.getName());
         //values.put(PetDatabase.)
         //values.put(PetDatabase.COLUMN_COLOR_RESOURCE, card.getColorResource());
-        long id = db.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
+        long id = database.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
         card.setId(id);
         return card;
     }

@@ -27,6 +27,7 @@
         </activity>
         <activity android:name=".AddPetActivity" />
         <activity android:name=".AddPetHistory" />
+        <activity android:name=".EditPetActivity" />
         <activity android:name=".PetList"></activity>
     </application>
 
