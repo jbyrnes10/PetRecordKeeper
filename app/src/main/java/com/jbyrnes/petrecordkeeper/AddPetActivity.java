@@ -32,19 +32,21 @@ public class AddPetActivity extends AppCompatActivity {
 
     ImageView photoView;
     String imageString;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int RESULT_LOAD_IMG = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pet);
 
-        Spinner spinner = (Spinner) findViewById(R.id.species_spinner);
+        Spinner spinner = findViewById(R.id.species_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.species_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        final EditText birthDateText = (EditText) findViewById(R.id.birthDate_input);
+        final EditText birthDateText = findViewById(R.id.birthDate_input);
         birthDateText.setInputType(InputType.TYPE_NULL);
         birthDateText.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -65,18 +67,29 @@ public class AddPetActivity extends AppCompatActivity {
             }
         });
 
-        Button launchCameraButton = (Button) findViewById(R.id.launch_camera_button);
+        Button launchCameraButton = findViewById(R.id.launch_camera_button);
         photoView = findViewById(R.id.pet_photo_view);
 
         launchCameraButton.setOnClickListener(new View.OnClickListener(){
              @Override
              public void onClick(View v) {
                  Intent intent = new Intent (MediaStore.ACTION_IMAGE_CAPTURE);
-                 startActivityForResult(intent,0);
+                 startActivityForResult(intent,REQUEST_IMAGE_CAPTURE);
              }
          });
 
-        Button addPetButton = (Button) findViewById(R.id.add_pet_button);
+        Button launchGalleryButton = findViewById(R.id.add_photo_button);
+
+        launchGalleryButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent,RESULT_LOAD_IMG);
+            }
+        });
+
+        Button addPetButton = findViewById(R.id.add_pet_button);
         addPetButton.setOnClickListener(new View.OnClickListener() {
 
             EditText petName = (EditText) findViewById(R.id.pet_name_input);
@@ -87,7 +100,7 @@ public class AddPetActivity extends AppCompatActivity {
                 PetDatabase databaseHelper = new PetDatabase(getBaseContext());
                 SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-                ImageView imageView = (ImageView) findViewById(R.id.pet_photo_view);
+                ImageView imageView = findViewById(R.id.pet_photo_view);
                 Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                 ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutput);
@@ -98,32 +111,22 @@ public class AddPetActivity extends AppCompatActivity {
                 values.put(PetDatabase.SPECIES, petSpecies.getSelectedItem().toString());
                 values.put(PetDatabase.BIRTH_DATE, birthDate.getText().toString());
                 values.put(PetDatabase.PICTURE, byteArrayImage);
-
-                long newRowId = db.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
+                //long newRowId =
+                db.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
             }
         });
-    }
-
-    private static int RESULT_LOAD_IMG = 1;
-
-    public void launchGallery(View view) {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Bitmap bitmap = (Bitmap)data.getExtras().get("data");
-        photoView.setImageBitmap(bitmap);
-
         try {
-            // When an Image is picked
-            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
-                    && null != data) {
-                // Get the Image from data
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK
+                    && data != null) {
+                //Picture was taken
+                Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+                photoView.setImageBitmap(bitmap);
 
                 Uri selectedImage = data.getData();
                 String[] filePathColumn = { MediaStore.Images.Media.DATA };
@@ -137,10 +140,25 @@ public class AddPetActivity extends AppCompatActivity {
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 imageString = cursor.getString(columnIndex);
                 cursor.close();
-                ImageView imgView = (ImageView) findViewById(R.id.pet_photo_view);
+                ImageView imgView = findViewById(R.id.pet_photo_view);
                 // Set the Image in ImageView after decoding the String
                 imgView.setImageBitmap(BitmapFactory
                         .decodeFile(imageString));
+
+            } else if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && data != null) {
+                //Image was selected from gallery
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver()
+                        .query(selectedImage, filePathColumn, null, null,
+                                null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                imageString = cursor.getString(columnIndex);
+                cursor.close();
+                ImageView imgView = findViewById(R.id.pet_photo_view);
+                // Set the Image in ImageView after decoding the String
+                imgView.setImageURI(selectedImage);
 
             } else {
                 Toast.makeText(this, "Please select an image",
@@ -150,28 +168,5 @@ public class AddPetActivity extends AppCompatActivity {
             Toast.makeText(this, "Error loading image", Toast.LENGTH_LONG)
                     .show();
         }
-
     }
-
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
-    public void launchCamera(View view) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            mImageView.setImageBitmap(imageBitmap);
-//        }
-//    }
-
-
-
-
 }

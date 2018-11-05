@@ -65,25 +65,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-
-        switch (item.getItemId()) {
-            case R.id.profile:
-                return true;
-            case R.id.add_pet:
-                startActivity(new Intent(this, AddPetActivity.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     public class GetCardsListTask extends AsyncTask<Void, Void, ArrayList<PetCard>> {
         @Override
         protected ArrayList<PetCard> doInBackground(Void... params) {
@@ -92,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
             if (cardList.size() == 0) {
                 PetCard card = new PetCard();
                 card.setName("Mollie");
-                //card.setColorResource(colors[i]);
                 cardList.add(card);
                 cardData.create(card);
             }

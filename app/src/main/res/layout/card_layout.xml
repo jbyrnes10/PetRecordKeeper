@@ -22,7 +22,7 @@
         <ImageView
             android:id="@+id/pet_image"
             android:layout_width="389dp"
-            android:layout_height="489dp"
+            android:layout_height="267dp"
             android:gravity="center"
             android:scaleType="fitXY"
             android:contentDescription="@null" />
