@@ -105,8 +105,6 @@ public class PetCardData {
     public PetCard create(PetCard card) {
         ContentValues values = new ContentValues();
         values.put(PetDatabase.PET_NAME, card.getName());
-        //values.put(PetDatabase.)
-        //values.put(PetDatabase.COLUMN_COLOR_RESOURCE, card.getColorResource());
         long id = database.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
         card.setId(id);
         return card;
