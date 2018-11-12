@@ -1,12 +1,17 @@
 package com.jbyrnes.petrecordkeeper;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -19,14 +24,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+
 public class EditPetActivity extends AppCompatActivity {
     private ImageView petImageView;
     private EditText petNameText;
     private Spinner speciesSpinner;
     private EditText birthDateText;
-    private TextView hiddenid;
+    private TextView hiddenId;
     private Intent intent;
     private PetCard editCard;
+
+    String nameExtra;
+    long tableIdExtra;
 
     Button updatePetButton;
     Button removePetButton;
@@ -45,14 +55,14 @@ public class EditPetActivity extends AppCompatActivity {
             petNameText = findViewById(R.id.pet_name_input);
             speciesSpinner = findViewById(R.id.species_spinner);
             birthDateText = findViewById(R.id.birthDate_input);
-            hiddenid = findViewById(R.id.table_id);
+            hiddenId = findViewById(R.id.table_id);
 
             updatePetButton = findViewById(R.id.update_button);
             removePetButton = findViewById(R.id.delete_button);
 
             intent = getIntent();
-            String nameExtra = intent.getStringExtra(MainActivity.EXTRA_NAME);
-            long tableIdExtra = intent.getLongExtra(MainActivity.EXTRA_ID, 0);
+            nameExtra = intent.getStringExtra(MainActivity.EXTRA_NAME);
+            tableIdExtra = intent.getLongExtra(MainActivity.EXTRA_ID, 0);
 
             //hit db here
             PetCardData cardData = new PetCardData(this);
@@ -131,7 +141,7 @@ public class EditPetActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String petName = petNameText.getText().toString().trim();
-                String tableId = hiddenid.getText().toString();
+                String tableId = hiddenId.getText().toString();
 
                 if (TextUtils.isEmpty(petName)) {
                     Toast.makeText(getApplicationContext(), "Please enter a name", Toast.LENGTH_SHORT).show();
@@ -144,23 +154,47 @@ public class EditPetActivity extends AppCompatActivity {
                 }
             }
         });
-//
-//        removePetButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                intent.putExtra(SampleMaterialActivity.EXTRA_DELETE, true);
-//
-//                setResult(RESULT_OK, intent);
-//                supportFinishAfterTransition();
-//            }
-//        });
+
+        removePetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PetDatabase databaseHelper = new PetDatabase(getBaseContext());
+                SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+                //EditText petName = findViewById(R.id.pet_name_input);
+                //TextView petId = findViewById(R.id.table_id);
+
+//                ContentValues values = new ContentValues();
+//                values.put(PetDatabase.COLUMN_ID, Long.parseLong(petId.getText().toString()));
+//                values.put(PetDatabase.PET_NAME, petName.getText().toString().trim());
+                //String columnName = MainActivity.EXTRA_NAME;
+                //String columnId =MainActivity.EXTRA_ID;
+                //String columnId = petId.getText().toString();
+                //String columnName = petName.getText().toString().trim();
+
+                //String name = nameExtra;
+                //String tableId = Long.toString(tableIdExtra);
+                //String whereClause = PetDatabase.COLUMN_ID + "=? AND " + PetDatabase.PET_NAME + "=?";
+
+                db.beginTransaction();
+
+            try {
+                db.execSQL("DELETE FROM " + PetDatabase.TABLE_PET_PROFILES + " WHERE ID=" + tableIdExtra + " AND NAME='" + nameExtra + "'");
+                //db.delete(PetDatabase.TABLE_PET_PROFILES,  whereClause, new String[] {nameExtra, tableId});
+                db.setTransactionSuccessful();
+
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            } finally {
+                db.endTransaction();
+                Intent mainActivity = new Intent(EditPetActivity.this, MainActivity.class);
+                startActivity(mainActivity);
+            }
+        }});
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

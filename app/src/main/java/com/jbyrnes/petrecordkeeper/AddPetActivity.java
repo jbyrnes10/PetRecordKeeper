@@ -19,10 +19,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -107,12 +105,22 @@ public class AddPetActivity extends AppCompatActivity {
                 byte[] byteArrayImage = byteArrayOutput.toByteArray();
 
                 ContentValues values = new ContentValues();
-                values.put(PetDatabase.PET_NAME, petName.getText().toString());
+                values.put(PetDatabase.PET_NAME, petName.getText().toString().trim());
                 values.put(PetDatabase.SPECIES, petSpecies.getSelectedItem().toString());
                 values.put(PetDatabase.BIRTH_DATE, birthDate.getText().toString());
                 values.put(PetDatabase.PICTURE, byteArrayImage);
-                //long newRowId =
-                db.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
+
+                long insertResult = db.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
+
+                if (insertResult != -1) {
+                    Toast.makeText(getApplicationContext(), "Pet successfully added!",
+                            Toast.LENGTH_LONG).show();
+
+                    Intent redirect = new Intent(getApplicationContext(), PetHistoryList.class);
+                    redirect.putExtra(MainActivity.EXTRA_NAME, petName.getText().toString().trim());
+                    redirect.putExtra(MainActivity.EXTRA_ID, insertResult);
+                    startActivity(redirect);
+                }
             }
         });
     }
@@ -122,29 +130,11 @@ public class AddPetActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         try {
-            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK
-                    && data != null) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null) {
                 //Picture was taken
                 Bitmap bitmap = (Bitmap)data.getExtras().get("data");
-                photoView.setImageBitmap(bitmap);
-
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-                // Get the cursor
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                // Move to first row
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                imageString = cursor.getString(columnIndex);
-                cursor.close();
                 ImageView imgView = findViewById(R.id.pet_photo_view);
-                // Set the Image in ImageView after decoding the String
-                imgView.setImageBitmap(BitmapFactory
-                        .decodeFile(imageString));
-
+                imgView.setImageBitmap(bitmap);
             } else if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && data != null) {
                 //Image was selected from gallery
                 Uri selectedImage = data.getData();

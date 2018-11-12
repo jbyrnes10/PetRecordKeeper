@@ -4,9 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -17,22 +14,17 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHolder> {
-
+public class PetHistoryCardAdapter extends RecyclerView.Adapter<PetHistoryCardAdapter.ViewHolder> {
     private Context context;
-    private ArrayList<PetCard> cardList;
+    private ArrayList<PetHistoryCard> cardList;
     public PetCardData cardData;
 
-    public PetCardAdapter(Context context, ArrayList<PetCard> cardsList, PetCardData cardsData) {
+    public PetHistoryCardAdapter(Context context, ArrayList<PetHistoryCard> cardsList, PetCardData cardsData) {
         this.context = context;
         this.cardList = cardsList;
         this.cardData = cardsData;
@@ -40,34 +32,22 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        try {
-            String name = cardList.get(position).getName();
-            TextView nameTextView = viewHolder.name;
-            TextView tableId = viewHolder.table_id;
+        String name = cardList.get(position).getName();
+        TextView nameTextView = viewHolder.note_name;
+        TextView tableId = viewHolder.note_table_id;
 
-            nameTextView.setText(name);
-            tableId.setText(Integer.toString(position));
-
-            ImageView image = viewHolder.pet_image;
-
-            if (cardList.get(position).getPicture() != null)
-                image.setImageBitmap(cardList.get(position).getPicture());
-            else
-                image.setBackgroundColor(Color.GRAY);
-
-        } catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
+        nameTextView.setText(name);
+        tableId.setText(Integer.toString(position));
     }
 
     @Override
-    public void onViewDetachedFromWindow(ViewHolder viewHolder) {
+    public void onViewDetachedFromWindow(PetHistoryCardAdapter.ViewHolder viewHolder) {
         super.onViewDetachedFromWindow(viewHolder);
         viewHolder.itemView.clearAnimation();
     }
 
     @Override
-    public void onViewAttachedToWindow(ViewHolder viewHolder) {
+    public void onViewAttachedToWindow(PetHistoryCardAdapter.ViewHolder viewHolder) {
         super.onViewAttachedToWindow(viewHolder);
         animateCircularReveal(viewHolder.itemView);
     }
@@ -95,28 +75,27 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
                 super.onAnimationEnd(animation);
 
                 view.setVisibility(View.INVISIBLE);
-                PetCard card = new PetCard();
+                PetHistoryCard card = new PetHistoryCard();
                 card.setId(getItemId(list_position));
                 card.setPosition(list_position);
-                new DeleteCardTask().execute(card);
+                new PetHistoryCardAdapter.DeleteCardTask().execute(card);
             }
         });
         animation.start();
     }
 
     public void addCard(String name, int color) {
-        PetCard card = new PetCard();
+        PetHistoryCard card = new PetHistoryCard();
         card.setName(name);
-        //card.setColorResource(color);
-        new CreateCardTask().execute(card);
+        new PetHistoryCardAdapter.CreateCardTask().execute(card);
     }
 
     public void updateCard(String name, int list_position) {
-        PetCard card = new PetCard();
+        PetHistoryCard card = new PetHistoryCard();
         card.setName(name);
         card.setId(getItemId(list_position));
         card.setPosition(list_position);
-        new UpdateCardTask().execute(card);
+        new PetHistoryCardAdapter.UpdateCardTask().execute(card);
     }
 
     public void deleteCard(View view, int list_position) {
@@ -138,28 +117,27 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public PetHistoryCardAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         LayoutInflater li = LayoutInflater.from(viewGroup.getContext());
-        View v = li.inflate(R.layout.card_layout, viewGroup, false);
-        return new ViewHolder(v);
+        View v = li.inflate(R.layout.history_card_layout, viewGroup, false);
+        return new PetHistoryCardAdapter.ViewHolder(v);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView name;
-        private ImageView pet_image;
-        private TextView table_id;
+        private TextView note_name;
+        //private ImageView pet_image;
+        private TextView note_table_id;
 
         public ViewHolder(View v) {
             super(v);
-            name = v.findViewById(R.id.name);
-            pet_image = v.findViewById(R.id.pet_image);
-            table_id = v.findViewById(R.id.table_id);
+            note_name = v.findViewById(R.id.history_name);
+            note_table_id = v.findViewById(R.id.history_table_id);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Pair<View, String> p1 = Pair.create((View) name, MainActivity.TRANSITION_NAME);
-                    Pair<View, String> p2 = Pair.create((View) name, MainActivity.TRANSITION_ID);
+                    Pair<View, String> p1 = Pair.create((View) note_name, PetHistoryList.TRANSITION_NAME);
+                    Pair<View, String> p2 = Pair.create((View) note_name, PetHistoryList.TRANSITION_ID);
 
                     AppCompatActivity act = (AppCompatActivity) context;
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(act, p1, p2);
@@ -169,9 +147,9 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
                     String name = cardList.get(requestCode).getName();
 
                     try {
-                        Intent transitionIntent = new Intent(context, PetHistoryList.class);
-                        transitionIntent.putExtra(MainActivity.EXTRA_NAME, name);
-                        transitionIntent.putExtra(MainActivity.EXTRA_ID, id);
+                        Intent transitionIntent = new Intent(context, EditPetHistory.class);
+                        transitionIntent.putExtra(PetHistoryList.EXTRA_NAME, name);
+                        transitionIntent.putExtra(PetHistoryList.EXTRA_ID, id);
                         ((AppCompatActivity) context).startActivityForResult(transitionIntent, requestCode, options.toBundle());
                     }
                     catch (Exception ex) {
@@ -180,12 +158,12 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
                 }
             });
 
-            Button editProfileButton = v.findViewById(R.id.edit_pet_button);
+            Button editProfileButton = v.findViewById(R.id.edit_pet_history_button);
             editProfileButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Pair<View, String> p1 = Pair.create((View) name, MainActivity.TRANSITION_NAME);
-                    Pair<View, String> p2 = Pair.create((View) name, MainActivity.TRANSITION_ID);
+                    Pair<View, String> p1 = Pair.create((View) note_name, MainActivity.TRANSITION_NAME);
+                    Pair<View, String> p2 = Pair.create((View) note_name, MainActivity.TRANSITION_ID);
 
                     AppCompatActivity act = (AppCompatActivity) context;
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(act, p1, p2);
@@ -195,9 +173,9 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
                     String name = cardList.get(requestCode).getName();
 
                     try {
-                        Intent transitionIntent = new Intent(context, EditPetActivity.class);
-                        transitionIntent.putExtra(MainActivity.EXTRA_NAME, name);
-                        transitionIntent.putExtra(MainActivity.EXTRA_ID, id);
+                        Intent transitionIntent = new Intent(context, EditPetHistory.class);
+                        transitionIntent.putExtra(PetHistoryList.EXTRA_NAME, name);
+                        transitionIntent.putExtra(PetHistoryList.EXTRA_ID, id);
                         ((AppCompatActivity) context).startActivityForResult(transitionIntent, requestCode, options.toBundle());
                     }
                     catch (Exception ex) {
@@ -209,46 +187,46 @@ public class PetCardAdapter extends RecyclerView.Adapter<PetCardAdapter.ViewHold
         }
     }
 
-    private class CreateCardTask extends AsyncTask<PetCard, Void, PetCard> {
+    private class CreateCardTask extends AsyncTask<PetHistoryCard, Void, PetHistoryCard> {
         @Override
-        protected PetCard doInBackground(PetCard... cards) {
+        protected PetHistoryCard doInBackground(PetHistoryCard... cards) {
             cardData.create(cards[0]);
             cardList.add(cards[0]);
             return cards[0];
         }
 
         @Override
-        protected void onPostExecute(PetCard card) {
+        protected void onPostExecute(PetHistoryCard card) {
             super.onPostExecute(card);
             //((MainActivity) context).doSmoothScroll(getItemCount() - 1);
             notifyItemInserted(getItemCount());
         }
     }
 
-    private class UpdateCardTask extends AsyncTask<PetCard, Void, PetCard> {
+    private class UpdateCardTask extends AsyncTask<PetHistoryCard, Void, PetHistoryCard> {
         @Override
-        protected PetCard doInBackground(PetCard... cards) {
+        protected PetHistoryCard doInBackground(PetHistoryCard... cards) {
             cardList.get(cards[0].getPosition()).setName(cards[0].getName());
             return cards[0];
         }
 
         @Override
-        protected void onPostExecute(PetCard card) {
+        protected void onPostExecute(PetHistoryCard card) {
             super.onPostExecute(card);
             notifyItemChanged(card.getPosition());
         }
     }
 
-    private class DeleteCardTask extends AsyncTask<PetCard, Void, PetCard> {
+    private class DeleteCardTask extends AsyncTask<PetHistoryCard, Void, PetHistoryCard> {
         @Override
-        protected PetCard doInBackground(PetCard... cards) {
+        protected PetHistoryCard doInBackground(PetHistoryCard... cards) {
             //cardData.delete(cards[0].getId());
             cardList.remove(cards[0].getPosition());
             return cards[0];
         }
 
         @Override
-        protected void onPostExecute(PetCard card) {
+        protected void onPostExecute(PetHistoryCard card) {
             super.onPostExecute(card);
             notifyItemRemoved(card.getPosition());
         }

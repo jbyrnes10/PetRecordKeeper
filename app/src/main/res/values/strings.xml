@@ -10,6 +10,15 @@
     <string name="fab_add_pet">Add New Pet</string>
     <string name="delete_pet">Remove</string>
     <string name="update_pet">Update</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="add_new_note">Add New Note for</string>
+    <string name="edit_note">Edit Note</string>
+    <string name="history_list_title">History for </string>
+    <string name="note_name">Note Name</string>
+    <string name="note_text">Notes</string>
+    <string name="note_date">Note Date</string>
+    <string name="add_note_button">Add Note</string>
+    <string name="add_documentation">Add Vet Receipt, Picture, Documentation, etc.</string>
     <string-array name="species_array">
         <item>Cat</item>
         <item>Dog</item>

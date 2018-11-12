@@ -11,10 +11,11 @@ import java.sql.Date;
 public class PetDatabase extends SQLiteOpenHelper {
 
     private static String DATABASE_NAME = "PET_DATABASE";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public static final String TABLE_PET_PROFILES = "PET_PROFILES";
-    public static final String TABLE_VACCINATIONS_LIST = "VACCINATIONS_LIST";
+    public static final String TABLE_HISTORY_LIST = "PET_HISTORY";
+    //public static final String TABLE_VACCINATIONS_LIST = "VACCINATIONS_LIST";
     //public static final String TABLE_VACCINATIONS_HISTORY = "VACCINATIONS_HISTORY";
     //public static final String TABLE_MEDICATION_REMINDERS = "MEDICATION_REMINDERS";
 
@@ -24,18 +25,29 @@ public class PetDatabase extends SQLiteOpenHelper {
     public static final String BREED = "BREED";
     public static final String BIRTH_DATE = "BIRTHDATE";
     public static final String PICTURE = "PICTURE";
-    public static final String VACCINATION_NAME = "NAME";
-    public static final String VACCINATION_DESCRIPTION = "DESCRIPTION";
-    public static final String VACCINATION_FREQUENCY = "FREQUENCY";
+    public static final String NOTE_NAME = "NAME";
+    public static final String NOTE_TEXT = "NOTE";
+    public static final String NOTE_DATE = "DATE";
+    public static final String PET_PROFILE_FK = "PET_PROFILE_FK";
+
+
+//    public static final String VACCINATION_NAME = "NAME";
+//    public static final String VACCINATION_DESCRIPTION = "DESCRIPTION";
+//    public static final String VACCINATION_FREQUENCY = "FREQUENCY";
 
     private static final String CREATE_TABLE_PET_PROFILES = "CREATE TABLE "
             + TABLE_PET_PROFILES + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + PET_NAME + " TEXT, " + SPECIES + " TEXT, "
             + BREED + " TEXT, " + BIRTH_DATE + " TEXT, " + PICTURE + " BLOB" + ");";
 
-    private static final String CREATE_TABLE_VACCINATIONS_LIST = "CREATE TABLE "
-            + TABLE_VACCINATIONS_LIST + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + VACCINATION_NAME + " TEXT, "
-            + VACCINATION_FREQUENCY + " TEXT, " + SPECIES + " TEXT, " + VACCINATION_DESCRIPTION + " TEXT" + ");";
+       private static final String CREATE_TABLE_PET_HISTORY = "CREATE TABLE "
+            + TABLE_HISTORY_LIST + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + NOTE_NAME + " TEXT, " + NOTE_DATE + " INTEGER, "
+            + NOTE_TEXT + " TEXT, " + PICTURE + " BLOB, " + PET_PROFILE_FK + " INTEGER, FOREIGN KEY (" + PET_PROFILE_FK + ") REFERENCES " + TABLE_PET_PROFILES + "(" + COLUMN_ID + "));";
+
+
+//    private static final String CREATE_TABLE_VACCINATIONS_LIST = "CREATE TABLE "
+//            + TABLE_VACCINATIONS_LIST + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + VACCINATION_NAME + " TEXT, "
+//            + VACCINATION_FREQUENCY + " TEXT, " + SPECIES + " TEXT, " + VACCINATION_DESCRIPTION + " TEXT" + ");";
 
 //    private static final String CREATE_TABLE_VACCINATIONS_HISTORY = "CREATE TABLE "
 //            + TABLE_VACCINATIONS_HISTORY + "(" + COLUMN_ID + " INTEGER," + KEY_CITY + " TEXT );";
@@ -49,18 +61,18 @@ public class PetDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_PET_PROFILES);
-        db.execSQL(CREATE_TABLE_VACCINATIONS_LIST);
-        //db.execSQL(CREATE_TABLE_VACCINATIONS_HISTORY);
-        //db.execSQL(CREATE_TABLE_MEDICATION_REMINDERS);
+        try {
+            db.execSQL(CREATE_TABLE_PET_PROFILES);
+            db.execSQL(CREATE_TABLE_PET_HISTORY);
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PET_PROFILES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_VACCINATIONS_LIST);
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_VACCINATIONS_HISTORY);
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_MEDICATION_REMINDERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HISTORY_LIST);
         onCreate(db);
     }
 }
