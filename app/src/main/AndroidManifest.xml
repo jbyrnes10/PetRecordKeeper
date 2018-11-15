@@ -30,6 +30,7 @@
         <activity android:name=".EditPetActivity" />
         <activity android:name=".EditPetHistory" />
         <activity android:name=".PetHistoryList" />
+        <activity android:name=".PetHistoryCardActivity" />
     </application>
 
 </manifest>

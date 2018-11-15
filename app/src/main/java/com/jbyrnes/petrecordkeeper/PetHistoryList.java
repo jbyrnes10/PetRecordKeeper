@@ -19,8 +19,10 @@ import java.util.ArrayList;
 public class PetHistoryList extends AppCompatActivity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_ID = "id";
+    public static final String EXTRA_FK = "fk";
     public static final String TRANSITION_NAME = "name_transition";
     public static final String TRANSITION_ID = "id_transition";
+    public static final String TRANSITION_FK = "fk_transition";
 
     private ArrayList<PetHistoryCard> cardList = new ArrayList<>();
     private PetCardData cardData = new PetCardData(this);
@@ -29,7 +31,6 @@ public class PetHistoryList extends AppCompatActivity {
     private Intent intent;
     String nameExtra;
     long tableIdExtra;
-    private TextView titleText;
     private FloatingActionButton fab;
     Toolbar toolbar;
 

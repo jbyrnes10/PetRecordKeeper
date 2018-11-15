@@ -30,11 +30,6 @@ public class PetDatabase extends SQLiteOpenHelper {
     public static final String NOTE_DATE = "DATE";
     public static final String PET_PROFILE_FK = "PET_PROFILE_FK";
 
-
-//    public static final String VACCINATION_NAME = "NAME";
-//    public static final String VACCINATION_DESCRIPTION = "DESCRIPTION";
-//    public static final String VACCINATION_FREQUENCY = "FREQUENCY";
-
     private static final String CREATE_TABLE_PET_PROFILES = "CREATE TABLE "
             + TABLE_PET_PROFILES + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + PET_NAME + " TEXT, " + SPECIES + " TEXT, "
@@ -43,17 +38,6 @@ public class PetDatabase extends SQLiteOpenHelper {
        private static final String CREATE_TABLE_PET_HISTORY = "CREATE TABLE "
             + TABLE_HISTORY_LIST + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + NOTE_NAME + " TEXT, " + NOTE_DATE + " INTEGER, "
             + NOTE_TEXT + " TEXT, " + PICTURE + " BLOB, " + PET_PROFILE_FK + " INTEGER, FOREIGN KEY (" + PET_PROFILE_FK + ") REFERENCES " + TABLE_PET_PROFILES + "(" + COLUMN_ID + "));";
-
-
-//    private static final String CREATE_TABLE_VACCINATIONS_LIST = "CREATE TABLE "
-//            + TABLE_VACCINATIONS_LIST + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + VACCINATION_NAME + " TEXT, "
-//            + VACCINATION_FREQUENCY + " TEXT, " + SPECIES + " TEXT, " + VACCINATION_DESCRIPTION + " TEXT" + ");";
-
-//    private static final String CREATE_TABLE_VACCINATIONS_HISTORY = "CREATE TABLE "
-//            + TABLE_VACCINATIONS_HISTORY + "(" + COLUMN_ID + " INTEGER," + KEY_CITY + " TEXT );";
-
-//    private static final String CREATE_TABLE_MEDICATION_REMINDERS = "CREATE TABLE "
-//            + TABLE_MEDICATION_REMINDERS + "(" + COLUMN_ID + " INTEGER," + KEY_CITY + " TEXT );";
 
     public PetDatabase(Context context) {
         super(context, DATABASE_NAME, null, DB_VERSION);

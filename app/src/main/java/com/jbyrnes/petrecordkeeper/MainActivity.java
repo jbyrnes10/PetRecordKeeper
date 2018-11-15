@@ -71,12 +71,12 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<PetCard> doInBackground(Void... params) {
             cardData.open();
             cardList = cardData.getAll();
-            if (cardList.size() == 0) {
-                PetCard card = new PetCard();
-                card.setName("Mollie");
-                cardList.add(card);
-                cardData.create(card);
-            }
+//            if (cardList.size() == 0) {
+//                PetCard card = new PetCard();
+//                card.setName("Testing");
+//                cardList.add(card);
+//                cardData.create(card);
+//            }
             return cardList;
         }
 

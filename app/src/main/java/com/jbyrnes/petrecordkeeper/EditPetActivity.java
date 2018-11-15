@@ -1,6 +1,7 @@
 package com.jbyrnes.petrecordkeeper;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,11 +14,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 
 public class EditPetActivity extends AppCompatActivity {
     private ImageView petImageView;
@@ -93,27 +97,6 @@ public class EditPetActivity extends AppCompatActivity {
         catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-//        nameEditText.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                if (s.length() == 0) {
-//                    // update initialTextView
-//                    initialTextView.setText("");
-//                } else if (s.length() >= 1) {
-//                    // initialTextView set to first letter of nameEditText and update name stringExtra
-//                    initialTextView.setText(String.valueOf(s.charAt(0)));
-//                    intent.putExtra(SampleMaterialActivity.EXTRA_UPDATE, true);
-//                }
-//            }
-
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//            }
-//        });
 
         Button launchCameraButton = findViewById(R.id.launch_camera_button);
         photoView = findViewById(R.id.pet_photo_view);
@@ -137,20 +120,77 @@ public class EditPetActivity extends AppCompatActivity {
             }
         });
 
+        birthDateText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                final Calendar cal = Calendar.getInstance();
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+                int month = cal.get(Calendar.MONTH);
+                int year = cal.get(Calendar.YEAR);
+
+                DatePickerDialog picker = new DatePickerDialog(EditPetActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                birthDateText.setText((monthOfYear + 1) +  "/" + dayOfMonth + "/" + year);
+                            }
+                        }, year, month, day);
+                picker.show();
+            }
+        });
+
         updatePetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String petName = petNameText.getText().toString().trim();
-                String tableId = hiddenId.getText().toString();
+                String tableId = Long.toString(tableIdExtra);
+                String birthDate = birthDateText.getText().toString();
+                String species = speciesSpinner.getSelectedItem().toString();
 
-                if (TextUtils.isEmpty(petName)) {
-                    Toast.makeText(getApplicationContext(), "Please enter a name", Toast.LENGTH_SHORT).show();
-                } else {
-                    intent.putExtra(MainActivity.EXTRA_NAME, String.valueOf(petName));
-                    intent.putExtra(MainActivity.EXTRA_ID, String.valueOf(tableId));
+                petImageView = findViewById(R.id.vet_receipt_view);
+                byte[] byteArrayImage = null;
+                if (petImageView.getDrawable() != null) {
+                    Bitmap bitmap = ((BitmapDrawable) photoView.getDrawable()).getBitmap();
 
-                    setResult(RESULT_OK, intent);
-                    supportFinishAfterTransition();
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+
+                    float bitmapRatio = (float) width / (float) height;
+                    if (bitmapRatio > 1) {
+                        width = 500;
+                        height = (int) (width / bitmapRatio);
+                    } else {
+                        height = 500;
+                        width = (int) (height * bitmapRatio);
+                    }
+                    Bitmap scaledImage = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                    ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
+                    scaledImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutput);
+                    byteArrayImage = byteArrayOutput.toByteArray();
+                }
+
+                PetDatabase databaseHelper = new PetDatabase(getBaseContext());
+                SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+                ContentValues values = new ContentValues();
+                values.put(PetDatabase.PET_NAME, petName);
+                values.put(PetDatabase.BIRTH_DATE, birthDate);
+                values.put(PetDatabase.SPECIES, species);
+                values.put(PetDatabase.PICTURE, byteArrayImage);
+
+                try {
+                    db.beginTransaction();
+                    db.update(PetDatabase.TABLE_PET_PROFILES, values, "ID=?", new String[] {tableId});
+                    db.setTransactionSuccessful();
+
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                } finally {
+                    db.endTransaction();
+                    db.close();
+
+                    Intent mainActivity = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(mainActivity);
                 }
             }
         });
@@ -161,28 +201,10 @@ public class EditPetActivity extends AppCompatActivity {
                 PetDatabase databaseHelper = new PetDatabase(getBaseContext());
                 SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-                //EditText petName = findViewById(R.id.pet_name_input);
-                //TextView petId = findViewById(R.id.table_id);
-
-//                ContentValues values = new ContentValues();
-//                values.put(PetDatabase.COLUMN_ID, Long.parseLong(petId.getText().toString()));
-//                values.put(PetDatabase.PET_NAME, petName.getText().toString().trim());
-                //String columnName = MainActivity.EXTRA_NAME;
-                //String columnId =MainActivity.EXTRA_ID;
-                //String columnId = petId.getText().toString();
-                //String columnName = petName.getText().toString().trim();
-
-                //String name = nameExtra;
-                //String tableId = Long.toString(tableIdExtra);
-                //String whereClause = PetDatabase.COLUMN_ID + "=? AND " + PetDatabase.PET_NAME + "=?";
-
-                db.beginTransaction();
-
             try {
+                db.beginTransaction();
                 db.execSQL("DELETE FROM " + PetDatabase.TABLE_PET_PROFILES + " WHERE ID=" + tableIdExtra + " AND NAME='" + nameExtra + "'");
-                //db.delete(PetDatabase.TABLE_PET_PROFILES,  whereClause, new String[] {nameExtra, tableId});
                 db.setTransactionSuccessful();
-
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             } finally {
@@ -191,19 +213,6 @@ public class EditPetActivity extends AppCompatActivity {
                 startActivity(mainActivity);
             }
         }});
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == android.R.id.home) {
-            super.onBackPressed();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

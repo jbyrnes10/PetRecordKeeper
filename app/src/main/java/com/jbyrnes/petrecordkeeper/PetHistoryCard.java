@@ -49,6 +49,14 @@ public class PetHistoryCard {
         this.position = position;
     }
 
+    public long getPetProfileFK() {
+        return petProfileFK;
+    }
+
+    public long getNoteDate() { return noteDate; }
+
+    public String getNoteText() { return noteText; }
+
     public Bitmap getPicture() {
         return BitmapFactory.decodeByteArray(picture, 0, picture.length);
     }

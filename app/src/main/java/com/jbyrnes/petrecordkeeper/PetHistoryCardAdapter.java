@@ -33,11 +33,17 @@ public class PetHistoryCardAdapter extends RecyclerView.Adapter<PetHistoryCardAd
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         String name = cardList.get(position).getName();
+        Long foreignKey = cardList.get(position).getPetProfileFK();
+        //Long primaryKey = cardList.get(position).getId();
+
         TextView nameTextView = viewHolder.note_name;
         TextView tableId = viewHolder.note_table_id;
+        TextView tableFk = viewHolder.profile_table_id;
 
         nameTextView.setText(name);
         tableId.setText(Integer.toString(position));
+        //tableId.setText(Long.toString(primaryKey));
+        tableFk.setText(Long.toString(foreignKey));
     }
 
     @Override
@@ -125,31 +131,35 @@ public class PetHistoryCardAdapter extends RecyclerView.Adapter<PetHistoryCardAd
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView note_name;
-        //private ImageView pet_image;
         private TextView note_table_id;
+        private TextView profile_table_id;
 
         public ViewHolder(View v) {
             super(v);
             note_name = v.findViewById(R.id.history_name);
             note_table_id = v.findViewById(R.id.history_table_id);
+            profile_table_id = v.findViewById(R.id.profile_table_id);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Pair<View, String> p1 = Pair.create((View) note_name, PetHistoryList.TRANSITION_NAME);
                     Pair<View, String> p2 = Pair.create((View) note_name, PetHistoryList.TRANSITION_ID);
+                    Pair<View, String> p3 = Pair.create((View) note_name, PetHistoryList.TRANSITION_FK);
 
                     AppCompatActivity act = (AppCompatActivity) context;
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(act, p1, p2);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(act, p1, p2, p3);
 
                     int requestCode = getAdapterPosition();
                     long id = cardList.get(requestCode).getId();
                     String name = cardList.get(requestCode).getName();
+                    long fk = cardList.get(requestCode).getPetProfileFK();
 
                     try {
-                        Intent transitionIntent = new Intent(context, EditPetHistory.class);
+                        Intent transitionIntent = new Intent(context, PetHistoryCardActivity.class);
                         transitionIntent.putExtra(PetHistoryList.EXTRA_NAME, name);
                         transitionIntent.putExtra(PetHistoryList.EXTRA_ID, id);
+                        transitionIntent.putExtra(PetHistoryList.EXTRA_FK, fk);
                         ((AppCompatActivity) context).startActivityForResult(transitionIntent, requestCode, options.toBundle());
                     }
                     catch (Exception ex) {
@@ -162,20 +172,23 @@ public class PetHistoryCardAdapter extends RecyclerView.Adapter<PetHistoryCardAd
             editProfileButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Pair<View, String> p1 = Pair.create((View) note_name, MainActivity.TRANSITION_NAME);
-                    Pair<View, String> p2 = Pair.create((View) note_name, MainActivity.TRANSITION_ID);
+                    Pair<View, String> p1 = Pair.create((View) note_name, PetHistoryList.TRANSITION_NAME);
+                    Pair<View, String> p2 = Pair.create((View) note_name, PetHistoryList.TRANSITION_ID);
+                    Pair<View, String> p3 = Pair.create((View) note_name, PetHistoryList.TRANSITION_FK);
 
                     AppCompatActivity act = (AppCompatActivity) context;
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(act, p1, p2);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(act, p1, p2, p3);
 
                     int requestCode = getAdapterPosition();
                     long id = cardList.get(requestCode).getId();
                     String name = cardList.get(requestCode).getName();
+                    long fk = cardList.get(requestCode).getPetProfileFK();
 
                     try {
                         Intent transitionIntent = new Intent(context, EditPetHistory.class);
                         transitionIntent.putExtra(PetHistoryList.EXTRA_NAME, name);
                         transitionIntent.putExtra(PetHistoryList.EXTRA_ID, id);
+                        transitionIntent.putExtra(PetHistoryList.EXTRA_FK, fk);
                         ((AppCompatActivity) context).startActivityForResult(transitionIntent, requestCode, options.toBundle());
                     }
                     catch (Exception ex) {

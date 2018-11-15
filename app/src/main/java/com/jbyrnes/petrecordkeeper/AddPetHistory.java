@@ -112,11 +112,27 @@ public class AddPetHistory extends AppCompatActivity {
                 PetDatabase databaseHelper = new PetDatabase(getBaseContext());
                 SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-                ImageView imageView = findViewById(R.id.vet_receipt_view);
-                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutput);
-                byte[] byteArrayImage = byteArrayOutput.toByteArray();
+                photoView = findViewById(R.id.vet_receipt_view);
+                byte[] byteArrayImage = null;
+                if (photoView.getDrawable() != null) {
+                    Bitmap bitmap = ((BitmapDrawable) photoView.getDrawable()).getBitmap();
+
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+
+                    float bitmapRatio = (float) width / (float) height;
+                    if (bitmapRatio > 1) {
+                        width = 500;
+                        height = (int) (width / bitmapRatio);
+                    } else {
+                        height = 500;
+                        width = (int) (height * bitmapRatio);
+                    }
+                    Bitmap scaledImage = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                    ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
+                    scaledImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutput);
+                    byteArrayImage = byteArrayOutput.toByteArray();
+                }
 
                 long dbNoteDate;
                 try {

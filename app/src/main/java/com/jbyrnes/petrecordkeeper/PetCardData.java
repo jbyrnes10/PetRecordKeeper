@@ -131,7 +131,6 @@ public class PetCardData {
             cursor = database.rawQuery("SELECT * FROM PET_HISTORY WHERE PET_PROFILE_FK = " + foreignKey + " ORDER BY DATE DESC", null);
 
             int count = cursor.getCount();
-
             if (count > 0 && cursor.moveToFirst()) {
                 do {
                     cards.add(new PetHistoryCard(

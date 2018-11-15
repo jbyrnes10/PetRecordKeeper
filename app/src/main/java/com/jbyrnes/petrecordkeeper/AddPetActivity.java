@@ -100,8 +100,20 @@ public class AddPetActivity extends AppCompatActivity {
 
                 ImageView imageView = findViewById(R.id.pet_photo_view);
                 Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+
+                float bitmapRatio = (float)width / (float) height;
+                if (bitmapRatio > 1) {
+                    width = 500;
+                    height = (int) (width / bitmapRatio);
+                } else {
+                    height = 500;
+                    width = (int) (height * bitmapRatio);
+                }
+                Bitmap scaledImage = Bitmap.createScaledBitmap(bitmap, width, height, true);
                 ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutput);
+                scaledImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutput);
                 byte[] byteArrayImage = byteArrayOutput.toByteArray();
 
                 ContentValues values = new ContentValues();
