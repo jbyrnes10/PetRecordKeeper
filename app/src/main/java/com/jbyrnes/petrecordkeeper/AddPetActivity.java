@@ -38,6 +38,9 @@ public class AddPetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pet);
 
+        String titleText = getResources().getString(R.string.add_pet);
+        setTitle(titleText);
+
         Spinner spinner = findViewById(R.id.species_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.species_array, android.R.layout.simple_spinner_item);

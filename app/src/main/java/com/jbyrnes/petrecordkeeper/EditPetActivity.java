@@ -68,6 +68,9 @@ public class EditPetActivity extends AppCompatActivity {
             nameExtra = intent.getStringExtra(MainActivity.EXTRA_NAME);
             tableIdExtra = intent.getLongExtra(MainActivity.EXTRA_ID, 0);
 
+            String titleText = getResources().getString(R.string.edit_profile) + " for " + nameExtra;
+            setTitle(titleText);
+
             //hit db here
             PetCardData cardData = new PetCardData(this);
             editCard = cardData.getSingleCard(nameExtra, tableIdExtra);
