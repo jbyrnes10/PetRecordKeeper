@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class PetHistoryCardActivity extends AppCompatActivity  {
+public class PetHistoryCardActivity extends BaseActivity  {
 
    private ImageView noteImageView;
    private TextView noteText;

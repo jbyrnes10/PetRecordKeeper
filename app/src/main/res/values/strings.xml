@@ -19,11 +19,14 @@
     <string name="note_text">Notes</string>
     <string name="note_date">Note Date</string>
     <string name="add_note_button">Add Note</string>
+    <string name="add_image_label">Add your favorite saved photo or take a new picture of your pet!</string>
     <string name="add_documentation">Add Vet Receipt, Picture, Documentation, etc.</string>
     <string name="home_link">Home</string>
     <string-array name="species_array">
         <item>Cat</item>
         <item>Dog</item>
+        <item>Fish</item>
+        <item>Reptile</item>
         <item>Other</item>
     </string-array>
 </resources>

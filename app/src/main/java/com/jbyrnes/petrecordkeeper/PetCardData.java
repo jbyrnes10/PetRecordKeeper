@@ -30,7 +30,7 @@ public class PetCardData {
         ArrayList<PetCard> cards = new ArrayList<>();
         Cursor cursor = null;
         try {
-            cursor = database.rawQuery("SELECT * FROM PET_PROFILES ORDER BY NAME DESC", null);
+            cursor = database.rawQuery("SELECT * FROM PET_PROFILES ORDER BY NAME ASC", null);
 
             int count = cursor.getCount();
 
@@ -62,7 +62,7 @@ public class PetCardData {
 
         try {
             if (database == null) open();
-            cursor = database.rawQuery("SELECT * FROM PET_PROFILES WHERE NAME = '" + name + "' AND ID = " + id + " ORDER BY NAME DESC", null);
+            cursor = database.rawQuery("SELECT * FROM PET_PROFILES WHERE NAME = '" + name + "' AND ID = " + id, null);
 
             int count = cursor.getCount();
 

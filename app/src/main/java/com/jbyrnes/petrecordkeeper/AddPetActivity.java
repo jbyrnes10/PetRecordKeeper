@@ -21,13 +21,15 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 
-public class AddPetActivity extends AppCompatActivity {
+public class AddPetActivity extends BaseActivity {
 
+    TextView imageLabel;
     ImageView photoView;
     String imageString;
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -70,6 +72,7 @@ public class AddPetActivity extends AppCompatActivity {
 
         Button launchCameraButton = findViewById(R.id.launch_camera_button);
         photoView = findViewById(R.id.pet_photo_view);
+        imageLabel = findViewById(R.id.add_image_label);
 
         launchCameraButton.setOnClickListener(new View.OnClickListener(){
              @Override
@@ -102,7 +105,19 @@ public class AddPetActivity extends AppCompatActivity {
                 SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
                 ImageView imageView = findViewById(R.id.pet_photo_view);
+                if (imageView.getDrawable() == null) {
+                    Toast.makeText(getApplicationContext(), "Please insert an image", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                String petNameText = petName.getText().toString();
+                if (petNameText.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please enter a name for your pet", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+
                 int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
 
@@ -119,10 +134,15 @@ public class AddPetActivity extends AppCompatActivity {
                 scaledImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutput);
                 byte[] byteArrayImage = byteArrayOutput.toByteArray();
 
+                String birthDateText = null;
+                if (birthDate.getText() != null) {
+                    birthDateText = birthDate.getText().toString();
+                }
+
                 ContentValues values = new ContentValues();
                 values.put(PetDatabase.PET_NAME, petName.getText().toString().trim());
                 values.put(PetDatabase.SPECIES, petSpecies.getSelectedItem().toString());
-                values.put(PetDatabase.BIRTH_DATE, birthDate.getText().toString());
+                values.put(PetDatabase.BIRTH_DATE, birthDateText);
                 values.put(PetDatabase.PICTURE, byteArrayImage);
 
                 long insertResult = db.insert(PetDatabase.TABLE_PET_PROFILES, null, values);
@@ -150,6 +170,7 @@ public class AddPetActivity extends AppCompatActivity {
                 Bitmap bitmap = (Bitmap)data.getExtras().get("data");
                 ImageView imgView = findViewById(R.id.pet_photo_view);
                 imgView.setImageBitmap(bitmap);
+                imageLabel.setVisibility(View.GONE);
             } else if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && data != null) {
                 //Image was selected from gallery
                 Uri selectedImage = data.getData();
@@ -164,7 +185,7 @@ public class AddPetActivity extends AppCompatActivity {
                 ImageView imgView = findViewById(R.id.pet_photo_view);
                 // Set the Image in ImageView after decoding the String
                 imgView.setImageURI(selectedImage);
-
+                imageLabel.setVisibility(View.GONE);
             } else {
                 Toast.makeText(this, "Please select an image",
                         Toast.LENGTH_LONG).show();

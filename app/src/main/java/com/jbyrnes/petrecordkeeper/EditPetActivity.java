@@ -1,8 +1,11 @@
 package com.jbyrnes.petrecordkeeper;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,11 +29,13 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 
-public class EditPetActivity extends AppCompatActivity {
+public class EditPetActivity extends BaseActivity {
+    TextView imageLabel;
     private ImageView petImageView;
     private EditText petNameText;
     private Spinner speciesSpinner;
@@ -76,7 +81,12 @@ public class EditPetActivity extends AppCompatActivity {
             editCard = cardData.getSingleCard(nameExtra, tableIdExtra);
 
             petNameText.setText(nameExtra);
-            petImageView.setImageBitmap(editCard.getPicture());
+
+            imageLabel = findViewById(R.id.add_image_label);
+            if (editCard.getPicture() != null) {
+                petImageView.setImageBitmap(editCard.getPicture());
+                imageLabel.setVisibility(View.GONE);
+            }
 
             String[] speciesValues = getResources().getStringArray(R.array.species_array);
             String savedSpeciesValue = editCard.getSpecies();
@@ -103,6 +113,7 @@ public class EditPetActivity extends AppCompatActivity {
 
         Button launchCameraButton = findViewById(R.id.launch_camera_button);
         photoView = findViewById(R.id.pet_photo_view);
+        imageLabel = findViewById(R.id.add_image_label);
 
         launchCameraButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -150,7 +161,17 @@ public class EditPetActivity extends AppCompatActivity {
                 String birthDate = birthDateText.getText().toString();
                 String species = speciesSpinner.getSelectedItem().toString();
 
-                petImageView = findViewById(R.id.vet_receipt_view);
+                petImageView = findViewById(R.id.pet_photo_view);
+                if (petImageView.getDrawable() == null) {
+                    Toast.makeText(getApplicationContext(), "Please insert an image", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (petName.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please enter a name for your pet", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 byte[] byteArrayImage = null;
                 if (petImageView.getDrawable() != null) {
                     Bitmap bitmap = ((BitmapDrawable) photoView.getDrawable()).getBitmap();
@@ -201,20 +222,40 @@ public class EditPetActivity extends AppCompatActivity {
         removePetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PetDatabase databaseHelper = new PetDatabase(getBaseContext());
-                SQLiteDatabase db = databaseHelper.getWritableDatabase();
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(EditPetActivity.this);
+                alertBuilder.setMessage("Are you sure you want to delete this pet?");
+                alertBuilder.setCancelable(true);
 
-            try {
-                db.beginTransaction();
-                db.execSQL("DELETE FROM " + PetDatabase.TABLE_PET_PROFILES + " WHERE ID=" + tableIdExtra + " AND NAME='" + nameExtra + "'");
-                db.setTransactionSuccessful();
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            } finally {
-                db.endTransaction();
-                Intent mainActivity = new Intent(EditPetActivity.this, MainActivity.class);
-                startActivity(mainActivity);
-            }
+                alertBuilder.setPositiveButton(
+                        "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                PetDatabase databaseHelper = new PetDatabase(getBaseContext());
+                                SQLiteDatabase db = databaseHelper.getWritableDatabase();
+                                try {
+                                    db.beginTransaction();
+                                    db.execSQL("DELETE FROM " + PetDatabase.TABLE_PET_PROFILES + " WHERE ID=" + tableIdExtra + " AND NAME='" + nameExtra + "'");
+                                    db.setTransactionSuccessful();
+                                } catch (Exception ex) {
+                                    System.out.println(ex.getMessage());
+                                } finally {
+                                    db.endTransaction();
+                                    Intent mainActivity = new Intent(EditPetActivity.this, MainActivity.class);
+                                    startActivity(mainActivity);
+                                }
+                            }
+                        });
+
+                alertBuilder.setNegativeButton(
+                        "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                alertBuilder.show();
         }});
     }
 
@@ -245,6 +286,7 @@ public class EditPetActivity extends AppCompatActivity {
                 // Set the Image in ImageView after decoding the String
                 imgView.setImageBitmap(BitmapFactory
                         .decodeFile(imageString));
+                imageLabel.setVisibility(View.GONE);
 
             } else if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && data != null) {
                 //Image was selected from gallery
@@ -260,6 +302,7 @@ public class EditPetActivity extends AppCompatActivity {
                 ImageView imgView = findViewById(R.id.pet_photo_view);
                 // Set the Image in ImageView after decoding the String
                 imgView.setImageURI(selectedImage);
+                imageLabel.setVisibility(View.GONE);
 
             } else {
                 Toast.makeText(this, "Please select an image",

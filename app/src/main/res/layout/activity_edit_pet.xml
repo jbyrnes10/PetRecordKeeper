@@ -1,92 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditPetActivity">
+    tools:context=".EditPetActivity"
+    android:id="@+id/relativeLayout3">
 
     <Button
         android:id="@+id/add_photo_button"
         android:layout_width="189dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/launch_camera_button"
         android:layout_marginTop="0dp"
-        android:text="@string/add_saved_picture" />
+        android:text="@string/add_saved_picture"
+        app:layout_constraintTop_toTopOf="@+id/launch_camera_button"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/launch_camera_button"
         android:layout_width="198dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/pet_photo_view"
-        android:text="@string/take_new_picture" />
+        android:text="@string/take_new_picture"
+        app:layout_constraintTop_toBottomOf="@+id/pet_photo_view"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/add_image_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_image_label"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.21" />
 
     <ImageView
         android:id="@+id/pet_photo_view"
         android:layout_width="match_parent"
         android:layout_height="267dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:contentDescription="@null" />
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/pet_name_input"
         android:layout_width="281dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/launch_camera_button"
-        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
         android:ems="6"
         android:gravity="center"
         android:hint="@string/pet_name_label"
+        android:importantForAutofill="no"
         android:inputType="text"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/launch_camera_button" />
 
     <Spinner
         android:id="@+id/species_spinner"
         android:layout_width="135dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="64dp"
-        android:spinnerMode="dropdown" />
+        android:layout_marginBottom="84dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <EditText
         android:id="@+id/birthDate_input"
         android:layout_width="198dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="132dp"
         android:ems="10"
         android:focusableInTouchMode="false"
         android:hint="@string/birth_date"
-        android:textAlignment="center" />
+        android:importantForAutofill="no"
+        android:inputType="date"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <Button
         android:id="@+id/update_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:layout_marginEnd="226dp"
         android:layout_marginBottom="0dp"
-        android:text="@string/update_pet" />
+        android:text="@string/update_pet"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
         android:layout_marginStart="230dp"
         android:layout_marginBottom="0dp"
-        android:text="@string/delete_pet" />
+        android:text="@string/delete_pet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <TextView
         android:id="@+id/table_id"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

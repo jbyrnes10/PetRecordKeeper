@@ -60,4 +60,11 @@ public class PetHistoryCard {
     public Bitmap getPicture() {
         return BitmapFactory.decodeByteArray(picture, 0, picture.length);
     }
+
+    public boolean pictureExists() {
+        if (this.picture != null)
+            return true;
+        else
+            return false;
+    }
 }

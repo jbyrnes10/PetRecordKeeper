@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class AddPetHistory extends AppCompatActivity {
+public class AddPetHistory extends BaseActivity {
 
     private Intent intent;
     private PetHistoryCard historyCard;
@@ -112,6 +112,18 @@ public class AddPetHistory extends AppCompatActivity {
                 PetDatabase databaseHelper = new PetDatabase(getBaseContext());
                 SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
+                String noteNameText = noteName.getText().toString();
+                if (noteNameText.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please enter a name for your note", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                String noteDateText = noteDate.getText().toString();
+                if (noteDateText.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please enter a date for your note", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 photoView = findViewById(R.id.vet_receipt_view);
                 byte[] byteArrayImage = null;
                 if (photoView.getDrawable() != null) {
@@ -137,11 +149,11 @@ public class AddPetHistory extends AppCompatActivity {
                 long dbNoteDate;
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-                    Date date = sdf.parse(noteDate.getText().toString());
+                    Date date = sdf.parse(noteDateText);
                     dbNoteDate = date.getTime();
 
                     ContentValues values = new ContentValues();
-                    values.put(PetDatabase.PET_NAME, noteName.getText().toString().trim());
+                    values.put(PetDatabase.PET_NAME, noteNameText.trim());
                     values.put(PetDatabase.NOTE_DATE, dbNoteDate);
                     values.put(PetDatabase.NOTE_TEXT, noteText.getText().toString());
                     values.put(PetDatabase.PET_PROFILE_FK, tableIdExtra);

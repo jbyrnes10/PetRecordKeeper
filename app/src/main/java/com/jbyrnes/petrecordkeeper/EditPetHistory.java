@@ -1,7 +1,9 @@
 package com.jbyrnes.petrecordkeeper;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,8 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class EditPetHistory extends AppCompatActivity {
+public class EditPetHistory extends BaseActivity {
 
+    private TextView imageLabel;
     private ImageView noteImageView;
     private EditText noteNameText;
     private EditText noteDateText;
@@ -40,7 +43,6 @@ public class EditPetHistory extends AppCompatActivity {
     String nameExtra;
     long tableIdExtra;
 
-    //ImageView photoView;
     Button updateNoteButton;
     Button removeNoteButton;
     String imageString;
@@ -65,13 +67,15 @@ public class EditPetHistory extends AppCompatActivity {
             noteNameText = findViewById(R.id.note_name);
             noteDateText = findViewById(R.id.note_date);
             noteText = findViewById(R.id.note_text);
+            imageLabel = findViewById(R.id.add_image_label);
 
             //hit db here
             PetCardData cardData = new PetCardData(this);
             editCard = cardData.getSingleHistoryCardById(tableIdExtra);
 
             noteNameText.setText(editCard.getName());
-            noteImageView.setImageBitmap(editCard.getPicture());
+            if (editCard.pictureExists())
+                noteImageView.setImageBitmap(editCard.getPicture());
             noteText.setText(editCard.getNoteText());
 
             String dateString = DateFormat.format("MM/dd/yyyy", new Date(editCard.getNoteDate())).toString();
@@ -174,11 +178,21 @@ public class EditPetHistory extends AppCompatActivity {
 
                 long dbNoteDate;
                 try {
+                    String noteDateText = noteDate.getText().toString();
+                    if (noteDateText.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "Please enter a date for your note", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
                     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-                    Date date = sdf.parse(noteDate.getText().toString());
+                    Date date = sdf.parse(noteDateText);
                     dbNoteDate = date.getTime();
 
                     String noteNameText = noteName.getText().toString().trim();
+                    if (noteNameText.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "Please enter a name for your note", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     String noteMultilineText = noteText.getText().toString();
 
                     ContentValues values = new ContentValues();
@@ -207,20 +221,41 @@ public class EditPetHistory extends AppCompatActivity {
         removeNoteButton = findViewById(R.id.delete_button);
         removeNoteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                PetDatabase databaseHelper = new PetDatabase(getBaseContext());
-                SQLiteDatabase db = databaseHelper.getWritableDatabase();
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(EditPetHistory.this);
+                alertBuilder.setMessage("Are you sure you want to delete this pet?");
+                alertBuilder.setCancelable(true);
 
-                try {
-                    db.delete(PetDatabase.TABLE_HISTORY_LIST, "ID=?", new String[] {Long.toString(tableIdExtra)});
-                    db.close();
+                alertBuilder.setPositiveButton(
+                        "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                PetDatabase databaseHelper = new PetDatabase(getBaseContext());
+                                SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-                    Intent redirect = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(redirect);
+                                try {
+                                    db.delete(PetDatabase.TABLE_HISTORY_LIST, "ID=?", new String[] {Long.toString(tableIdExtra)});
+                                    db.close();
 
-                } catch (Exception ex) {
-                    Toast.makeText(getApplicationContext(), ex.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                }
+                                    Intent redirect = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(redirect);
+
+                                } catch (Exception ex) {
+                                    Toast.makeText(getApplicationContext(), ex.getMessage(),
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                alertBuilder.setNegativeButton(
+                        "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                alertBuilder.show();
             }
         });
     }
@@ -234,6 +269,7 @@ public class EditPetHistory extends AppCompatActivity {
                 //Picture was taken
                 Bitmap bitmap = (Bitmap)data.getExtras().get("data");
                 noteImageView.setImageBitmap(bitmap);
+                imageLabel.setVisibility(View.GONE);
             } else if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && data != null) {
                 //Image was selected from gallery
                 Uri selectedImage = data.getData();
@@ -247,7 +283,7 @@ public class EditPetHistory extends AppCompatActivity {
                 cursor.close();
                 // Set the Image in ImageView after decoding the String
                 noteImageView.setImageURI(selectedImage);
-
+                imageLabel.setVisibility(View.GONE);
             } else {
                 Toast.makeText(this, "Please select an image",
                         Toast.LENGTH_LONG).show();

@@ -16,7 +16,7 @@ import android.support.v7.widget.Toolbar;
 
 import java.util.ArrayList;
 
-public class PetHistoryList extends AppCompatActivity {
+public class PetHistoryList extends BaseActivity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_ID = "id";
     public static final String EXTRA_FK = "fk";

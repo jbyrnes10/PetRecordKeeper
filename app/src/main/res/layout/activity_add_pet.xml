@@ -23,10 +23,20 @@
         android:layout_marginTop="0dp"
         android:text="@string/take_new_picture" />
 
+    <TextView
+        android:id="@+id/add_image_label"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:text="@string/add_image_label"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
     <ImageView
         android:id="@+id/pet_photo_view"
         android:layout_width="match_parent"
-        android:layout_height="267dp"
+        android:layout_height="300dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:contentDescription="@null" />
@@ -37,9 +47,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/launch_camera_button"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="23dp"
         android:ems="6"
         android:gravity="center"
         android:hint="@string/pet_name_label"
+        android:importantForAutofill="no"
         android:inputType="text"
         android:textAlignment="center" />
 
@@ -62,7 +74,9 @@
         android:ems="10"
         android:focusableInTouchMode="false"
         android:hint="@string/birth_date"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:inputType="date"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/add_pet_button"
