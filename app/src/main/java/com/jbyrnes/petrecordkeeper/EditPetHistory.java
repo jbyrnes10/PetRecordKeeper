@@ -74,8 +74,10 @@ public class EditPetHistory extends BaseActivity {
             editCard = cardData.getSingleHistoryCardById(tableIdExtra);
 
             noteNameText.setText(editCard.getName());
-            if (editCard.pictureExists())
+            if (editCard.pictureExists()) {
+                imageLabel.setVisibility(View.GONE);
                 noteImageView.setImageBitmap(editCard.getPicture());
+            }
             noteText.setText(editCard.getNoteText());
 
             String dateString = DateFormat.format("MM/dd/yyyy", new Date(editCard.getNoteDate())).toString();
@@ -222,7 +224,7 @@ public class EditPetHistory extends BaseActivity {
         removeNoteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(EditPetHistory.this);
-                alertBuilder.setMessage("Are you sure you want to delete this pet?");
+                alertBuilder.setMessage("Are you sure you want to delete this note?");
                 alertBuilder.setCancelable(true);
 
                 alertBuilder.setPositiveButton(

@@ -26,7 +26,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddPetActivity" />
-        <activity android:name=".AddPetHistory" />
+        <activity
+            android:name=".AddPetHistory"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".EditPetActivity" />
         <activity android:name=".EditPetHistory" />
         <activity android:name=".PetHistoryList" />

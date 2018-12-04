@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,6 +39,7 @@ public class AddPetHistory extends BaseActivity {
     long tableIdExtra;
     ImageView photoView;
     String imageString;
+    private TextView imageLabel;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int RESULT_LOAD_IMG = 2;
@@ -54,6 +58,8 @@ public class AddPetHistory extends BaseActivity {
 
             String titleText = getResources().getString(R.string.add_new_note) + " " + nameExtra;
             setTitle(titleText);
+
+            imageLabel = findViewById(R.id.add_image_label);
 
             final EditText noteDateText = findViewById(R.id.note_date);
             noteDateText.setInputType(InputType.TYPE_NULL);
@@ -187,8 +193,39 @@ public class AddPetHistory extends BaseActivity {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null) {
                 //Picture was taken
                 Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+
+                try {
+                    ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutput);
+                    byte[] byteArrayImage = byteArrayOutput.toByteArray();
+                    ByteArrayInputStream byteArrayInput = new ByteArrayInputStream(byteArrayImage);
+
+                    ExifInterface exif = new ExifInterface(byteArrayInput);
+                    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+
+                    Toast.makeText(this, "Orientation: " + orientation,
+                            Toast.LENGTH_LONG).show();
+
+                    Matrix matrix = new Matrix();
+//                    if (orientation == 0) {
+//                        matrix.postRotate(90);
+//                    }
+//                    else
+                    if (orientation == 3) {
+                        matrix.postRotate(180);
+                    }
+                    else if (orientation == 8) {
+                        matrix.postRotate(270);
+                    }
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true); // rotating bitmap
+                }
+                catch (Exception e) {
+                    System.out.print(e.getMessage());
+                }
+
                 ImageView imgView = findViewById(R.id.vet_receipt_view);
                 imgView.setImageBitmap(bitmap);
+                imageLabel.setVisibility(View.GONE);
             } else if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && data != null) {
                 //Image was selected from gallery
                 Uri selectedImage = data.getData();
@@ -203,7 +240,7 @@ public class AddPetHistory extends BaseActivity {
                 ImageView imgView = findViewById(R.id.vet_receipt_view);
                 // Set the Image in ImageView after decoding the String
                 imgView.setImageURI(selectedImage);
-
+                imageLabel.setVisibility(View.GONE);
             } else {
                 Toast.makeText(this, "Please select an image",
                         Toast.LENGTH_LONG).show();

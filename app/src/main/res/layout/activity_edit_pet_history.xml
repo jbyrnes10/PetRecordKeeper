@@ -63,7 +63,8 @@
         android:layout_marginTop="488dp"
         android:text="@string/add_saved_picture"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
     <Button
         android:id="@+id/launch_camera_button"
@@ -73,7 +74,8 @@
         android:layout_marginTop="488dp"
         android:text="@string/take_new_picture"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
     <TextView
         android:id="@+id/add_image_label"
@@ -102,7 +104,8 @@
         android:text="@string/update_pet"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/note_date" />
+        app:layout_constraintStart_toStartOf="@+id/note_date"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
     <Button
         android:id="@+id/delete_button"
@@ -112,6 +115,7 @@
         android:text="@string/delete_pet"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
 </android.support.constraint.ConstraintLayout>

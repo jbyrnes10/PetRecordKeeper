@@ -223,7 +223,7 @@ public class EditPetActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(EditPetActivity.this);
-                alertBuilder.setMessage("Are you sure you want to delete this pet?");
+                alertBuilder.setMessage("Are you sure you want to remove this pet?");
                 alertBuilder.setCancelable(true);
 
                 alertBuilder.setPositiveButton(
